@@ -30,3 +30,18 @@
 *.exe
 *.out
 *.app
+
+# CLion / JetBrains config folder
+.idea/
+
+# CMake build directories
+cmake-build-*/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Logs and temporary files
+*.log
+*.tmp
+*.swp
