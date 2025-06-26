@@ -13,9 +13,7 @@ private:
     int Current_Readers;
     int Reads_After_Write;
 
-    std::mutex RW_Mutex;
-    std::mutex Main_Mutex;
-
+    std::mutex Mutex;
     std::condition_variable Can_Read_CV;
     std::condition_variable Can_Write_CV;
 
@@ -24,7 +22,9 @@ public:
 
     void Read(int readerId);
     void Write(int writerId);
-    void Shutdown();
+
+    bool IsStopped() const;
+    void StopSimulation();
 };
 
 class reader {

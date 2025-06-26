@@ -1,86 +1,92 @@
-//#include "Dining Philosophers Problem/dining_philosophers.h"
-//#include "Readers-Writers Problem/readers_writers.h"
-//#include <thread>
-//#include <vector>
-//#include <iostream>
-//
-//int main() {
-//    {
-//        for (int i = 0; i < N; ++i) {
-//            A_Chopsticks.emplace_back(std::make_unique<chopstick>(i));
-//        }
-//        for (int i = 0; i < N; ++i) {
-//            A_Philosophers.emplace_back(std::make_unique<philosopher>(i));
-//        }
-//
-//        std::vector<std::thread> threads;
-//        for (auto &phil: A_Philosophers) {
-//            threads.emplace_back(Dine, phil.get());
-//        }
-//
-//        for (auto &t: threads) {
-//            t.join();
-//        }
-//
-//        std::cout << "All philosophers are done eating.\n";
-//    }
-//
-//    {
-//        data shared_data;
-//
-//        const int num_readers = 6;
-//        const int num_writers = 2;
-//
-//        std::vector<std::thread> threads;
-//
-//        // Launch writers
-//        for (int i = 0; i < num_writers; ++i) {
-//            threads.emplace_back(writer(i + 1, shared_data));
-//        }
-//
-//        // Launch readers
-//        for (int i = 0; i < num_readers; ++i) {
-//            threads.emplace_back(reader(i + 1, shared_data));
-//        }
-//
-//        // Wait for threads to complete
-//        for (auto& t : threads) {
-//            if (t.joinable()) t.join();
-//        }
-//
-//        // Shutdown signal (in case some threads are still waiting)
-//        shared_data.Shutdown();
-//
-//        std::cout << "All reader and writer threads completed.\n";
-//    }
-//
-//    return 0;
-//}
-
+#include "WiTi Problem/WiTi.h"
+#include "Dining Philosophers Problem/dining_philosophers.h"
 #include "Readers-Writers Problem/readers_writers.h"
+
+#include <iostream>
 #include <thread>
 #include <vector>
 
-int main() {
-    data shared_data;
+void Run_WiTi(){
+    std::string filename = "data.txt";
+    std::vector<Task> tasks = readTasksFromFile(filename);
 
-    std::vector<std::thread> readers;
-    std::vector<std::thread> writers;
+    std::vector<int> order;
+    int minPenalty = weightedTardinessDP(tasks, order);
 
-    // Start 3 readers
-    for (int i = 0; i < 3; ++i) {
-        readers.emplace_back(reader(i + 1, shared_data));
+    std::cout << "Minimalna kara: " << minPenalty << std::endl;
+
+    std::cout << "Kolejnosc wykonywania zadan: ";
+    for (int idx : order) {
+        std::cout << (idx + 1) << " ";
+    }
+    std::cout << std::endl;
+}
+
+void Run_Philosophers(){
+
+    for (int i = 0; i < N; ++i) {
+        A_Chopsticks.emplace_back(std::make_unique<chopstick>(i));
     }
 
-    // Start 1 writer
-    writers.emplace_back(writer(1, shared_data));
+    for (int i = 0; i < N; ++i) {
+        A_Philosophers.emplace_back(std::make_unique<philosopher>(i));
+    }
 
-    // Run for a while then shutdown
-    std::this_thread::sleep_for(std::chrono::seconds(10));
-    shared_data.Shutdown();
+    std::vector<std::thread> threads;
 
-    for (auto& r : readers) r.join();
-    for (auto& w : writers) w.join();
+    for (auto &phil: A_Philosophers) {
+        threads.emplace_back(Dine, phil.get());
+    }
 
+    for (auto &t: threads) {
+        t.join();
+    }
+    std::cout << "All philosophers are done eating.\n";
+}
+
+void Run_Readers_Writers(){
+    data shared_data;
+    std::vector<std::thread> threads;
+
+    for (int i = 0; i < 5; ++i)
+        threads.emplace_back(reader(i, shared_data));
+
+    for (int i = 0; i < 2; ++i)
+        threads.emplace_back(writer(i, shared_data));
+
+    std::this_thread::sleep_for(std::chrono::seconds(5));
+
+    shared_data.StopSimulation();
+
+    for (auto& t : threads){
+        t.join();
+    }
+
+
+    std::cout << "Readers and writes are done.\n";
+}
+
+int main() {
+    int choice;
+    std::cout << "Select a problem to rub:\n";
+    std::cout << "1. WiTi\n";
+    std::cout << "2. Dining Philosophers\n";
+    std::cout << "3. Readers Writers\n";
+    std::cout << "Your choice: ";
+    std::cin >> choice;
+
+    switch (choice) {
+        case 1:
+            Run_WiTi();
+            break;
+        case 2:
+            Run_Philosophers();
+            break;
+        case 3:
+            Run_Readers_Writers();
+            break;
+        default:
+            std::cout << "Niepoprawny wybor.\n";
+    }
     return 0;
 }

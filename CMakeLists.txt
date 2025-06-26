@@ -11,4 +11,4 @@ add_executable(Concurrent_Programming
         "main.cpp"
         "Readers-Writers Problem/readers_writers.h"
         "Readers-Writers Problem/readers_writers.cpp"
-        )
+        "WiTi Problem/WiTi.h" "WiTi Problem/WiTi.cpp")
